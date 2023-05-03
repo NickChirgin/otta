@@ -34,10 +34,37 @@ func init() {
 	Postgre = &PostgreSQL{DB: conn}
 }
 
-func (p *PostgreSQL) GetShortUrl(url string) string {
+func (p *PostgreSQL) ShortUrl(url string) string {
+
+}
+
+func (p *PostgreSQL) FullURL(shortUrl string) string {
 	return ""
 }
 
-func (p *PostgreSQL) GetFullURL(shortUrl string) string {
-	return ""
+func (p *PostgreSQL) LastID() (int64, error) {
+	var id int64
+	result, err := p.DB.Exec("SELECT currval(pg_get_serial_sequence('urls', 'id'))")
+	if err != nil {
+		return 0, err
+	}
+	id, err = result.LastInsertId()
+	if err != nil {
+		return 0, err
+	} 
+	return id, nil
+}
+
+func (p *PostgreSQL) URLExist(url string) (string, error) {
+	stmt, err := p.DB.Prepare("SELECT shorturl FROM urls WHERE url=$1;")
+	if err != nil {
+		return "", err
+	}
+	defer stmt.Close()
+	var shortURL string
+	err = stmt.QueryRow(url).Scan(shortURL)
+	if err != nil {
+		return "", err
+	}
+	return shortURL, nil	
 }

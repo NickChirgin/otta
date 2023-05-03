@@ -10,8 +10,4 @@ type Server struct {
 }
 
 func main() {
-	server1 := Server{Data: storage.Postgre, Age: 15}
-	server1.Data.GetFullURL("")
-	server2 := Server{Data: storage.MemDB, Age: 10}
-	server2.Data.GetFullURL("")
 }

@@ -40,10 +40,10 @@ func init() {
 	fmt.Println("In-memory db ready to use")
 }
 
-func (m *MemoryDB) GetShortUrl(url string) string {
+func (m *MemoryDB) ShortUrl(url string) string {
 	return ""
 }
 
-func (m *MemoryDB) GetFullURL(hashedURL string) string {
+func (m *MemoryDB) FullURL(hashedURL string) string {
 	return ""
 }
