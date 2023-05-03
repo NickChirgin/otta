@@ -6,6 +6,7 @@ import (
 	"github.com/catinello/base62"
 )
 const URL_LENGTH = 10
+const BASE_URL = "ozon.it/"
 /*
 Описание алгоритма:
 Есть два варианта, которыми можно решить задачу. Первый вариант полный URL провести сквозь hash функцию, но мы столкнемся с коллизиями, когда две разные ссылки
@@ -19,5 +20,5 @@ func HashURL(id int) string {
 		emptyString := strings.Repeat("_", count)
 		hashURL += emptyString
 	}
-	return hashURL
+	return BASE_URL + hashURL
 }
