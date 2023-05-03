@@ -1,3 +1,5 @@
+github.com/catinello/base62 v0.0.0-20210103152244-29b605f01e9b h1:cmJ9DNW7ynZyRSbmMFJ196VoeyACx59l4evFWd6/fw0=
+github.com/catinello/base62 v0.0.0-20210103152244-29b605f01e9b/go.mod h1:5LcXhHD4xsYgujv9TLgV4rIhOxGqBJgpdUG42MHSKaQ=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
 github.com/golang/protobuf v1.5.3 h1:KhyjKVUg7Usr/dYsdSqoFveMYd5ko72D+zANwlG1mmg=
 github.com/golang/protobuf v1.5.3/go.mod h1:XVQd3VNwM+JqD3oG2Ue2ip4fOMUkwXdXDdiuN0vRsmY=
