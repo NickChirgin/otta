@@ -1,4 +1,4 @@
-CONNECT ozon;
+\connect ozon;
 
 CREATE TABLE
     urls(

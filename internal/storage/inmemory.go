@@ -6,6 +6,8 @@ import (
 
 	"github.com/hashicorp/go-memdb"
 	"github.com/nickchirgin/otta/pkg/hasher"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type MemoryDB struct {
@@ -32,17 +34,17 @@ func init() {
 					"id": {
 						Name:    "id",
 						Unique:  true,
-						Indexer: &memdb.IntFieldIndex{Field: "Id"},
+						Indexer: &memdb.IntFieldIndex{Field: "id"},
 					},
 					"tinyURL": {
 						Name:    "tinyURL",
 						Unique:  true,
-						Indexer: &memdb.StringFieldIndex{Field: "TinyURL"},
+						Indexer: &memdb.StringFieldIndex{Field: "shortURL"},
 					},
 					"fullURL": {
 						Name:    "fullURL",
-						Unique:  false,
-						Indexer: &memdb.IntFieldIndex{Field: "FullURL"},
+						Unique:  true,
+						Indexer: &memdb.StringFieldIndex{Field: "url"},
 					},
 				},
 			},
@@ -69,7 +71,7 @@ func (m *MemoryDB) ShortUrl(url string) string {
 }
 
 func (m *MemoryDB) FullURL(hashedURL string) string {
-	txn := MemDB.DB.Txn(false)
+	txn := m.DB.Txn(false)
 	defer txn.Abort()
 	raw,err := txn.First("urls", "tinyURL", hashedURL)
 	if err != nil {
@@ -80,7 +82,7 @@ func (m *MemoryDB) FullURL(hashedURL string) string {
 
 func (m *MemoryDB) AddURL(url, shortURL string) error {
 	row := Row{id: id, url: url, shortURL: shortURL}
-	txn := MemDB.DB.Txn(true)
+	txn := m.DB.Txn(true)
 	err := txn.Insert("urls", row)
 	if err != nil {
 		return err
@@ -91,11 +93,14 @@ func (m *MemoryDB) AddURL(url, shortURL string) error {
 }
 
 func (m *MemoryDB) URLExist(url string) (string, error) {
-	txn := MemDB.DB.Txn(false)
+	txn := m.DB.Txn(false) 
 	defer txn.Abort()
 	raw, err := txn.First("urls", "fullURL", url)
 	if err != nil {
 		return "", err
+	}
+	if raw == nil {
+		return "", status.Errorf(codes.OutOfRange, "") 
 	}
 	return raw.(Row).shortURL, nil
 }
