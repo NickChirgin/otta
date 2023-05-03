@@ -1,6 +1,6 @@
 package storage
 
 type IStorage interface {
-	GetShortUrl(url string) string
-	GetFullURL(shortURL string) string
+	ShortUrl(url string) string
+	FullURL(shortURL string) string
 }
