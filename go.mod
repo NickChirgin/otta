@@ -3,6 +3,7 @@ module github.com/nickchirgin/otta
 go 1.20
 
 require (
+	github.com/catinello/base62 v0.0.0-20210103152244-29b605f01e9b // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-memdb v1.3.4 // indirect

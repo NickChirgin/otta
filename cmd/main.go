@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/nickchirgin/otta/internal/storage"
+	"github.com/nickchirgin/otta/pkg/hasher"
 )
 
 type Server struct {
@@ -10,8 +13,5 @@ type Server struct {
 }
 
 func main() {
-	server1 := Server{Data: storage.Postgre, Age: 15}
-	server1.Data.GetFullURL("")
-	server2 := Server{Data: storage.MemDB, Age: 10}
-	server2.Data.GetFullURL("")
+	fmt.Println(hasher.HashURL(125))
 }
