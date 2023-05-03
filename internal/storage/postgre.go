@@ -7,6 +7,7 @@ import (
 	"os"
 
 	_ "github.com/jackc/pgx/stdlib"
+	"github.com/nickchirgin/otta/pkg/hasher"
 )
 
 type PostgreSQL struct {
@@ -35,11 +36,33 @@ func init() {
 }
 
 func (p *PostgreSQL) ShortUrl(url string) string {
-
+	tinyURL, err := p.URLExist(url)
+	if err != nil {
+		id, err := p.LastID()
+		if err != nil {
+			log.Fatalf("Error while finding last id in postgre %v", err)
+		}
+		tinyURL = hasher.HashURL(int(id))
+		err = p.AddURL(url, tinyURL)
+		if err != nil {
+			log.Fatalf("Error while adding data to postgre %v", err)
+		}
+	}
+	return tinyURL
 }
 
 func (p *PostgreSQL) FullURL(shortUrl string) string {
-	return ""
+	stmt, err := p.DB.Prepare("SELECT url FROM urls WHERE shorturl=$1")
+	if err != nil {
+		log.Fatalf("Error while querying postgre %v", err)
+	}
+	var url string
+	defer stmt.Close()
+	err = stmt.QueryRow(shortUrl).Scan(url)
+	if err != nil {
+		log.Fatalf("Error while executing query %v", err)
+	}
+	return url
 }
 
 func (p *PostgreSQL) LastID() (int64, error) {
@@ -67,4 +90,14 @@ func (p *PostgreSQL) URLExist(url string) (string, error) {
 		return "", err
 	}
 	return shortURL, nil	
+}
+
+func (p *PostgreSQL) AddURL(url, shorturl string) error {
+	stmt, err := p.DB.Prepare("INSERT INTO urls (url, shorturl) VALUES ($1, $2);") 
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	stmt.QueryRow(url, shorturl)
+	return nil
 }

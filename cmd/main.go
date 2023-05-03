@@ -6,7 +6,7 @@ import (
 
 type Server struct {
 	Data storage.IStorage
-	Age int
+	Age  int
 }
 
 func main() {
