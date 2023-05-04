@@ -78,7 +78,7 @@ func (m *MemoryDB) FullURL(hashedURL string) (string, error) {
 		return "", err
 	}
 	if raw == nil {
-		return "", status.Errorf(codes.OutOfRange, "No original url for this short url") 
+		return "", status.Errorf(codes.NotFound, "No original url for this short url") 
 	}
 	return raw.(Row).url, nil
 }
