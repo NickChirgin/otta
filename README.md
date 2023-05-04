@@ -51,8 +51,8 @@ CMD go run cmd/main.go -memory
 docker compose up --build
 ```
 
-В качестве теста сервиса можно использовать Postman, но чтобы сделать запрос нужно узнать ip контейнера  
-для этого используем команду:
+В качестве теста сервиса можно использовать Postman, но чтобы сделать запрос нужно узнать ip контейнера.  
+Для этого используем команду:
 ```
 docker inspect \                       
   -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ID_OR_CONTAINER_NAME
