@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package tinyurl;
+
+option go_package = "/proto";
+
+
+message URL {
+  string FullURL = 1;
+}
+
+message HashedURL {
+  string ShortURL = 1;
+}
+
+
+service UrlService {
+  rpc TinyURL(URL) returns (HashedURL);
+  rpc FullURL(HashedURL) returns (URL);
+}
