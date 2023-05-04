@@ -20,7 +20,7 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	proto.RegisterUrlServiceServer(s, &server{DB: storage.MemDB})
+	proto.RegisterUrlServiceServer(s, &server{DB: storage.Postgre})
 	
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
@@ -35,6 +35,9 @@ func (s *server) TinyURL(ctx context.Context, req *proto.URL) (*proto.HashedURL,
 
 func (s *server) FullURL(ctx context.Context, req *proto.HashedURL) (*proto.URL, error) {
 	shortURL := req.GetShortURL()
-	URL := s.DB.FullURL(shortURL)
+	URL, err := s.DB.FullURL(shortURL)
+	if err != nil {
+		return nil, err
+	}
 	return &proto.URL{FullURL: URL}, nil
 }

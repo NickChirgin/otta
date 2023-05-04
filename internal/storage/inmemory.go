@@ -70,14 +70,18 @@ func (m *MemoryDB) ShortUrl(url string) string {
 	return tinyURL
 }
 
-func (m *MemoryDB) FullURL(hashedURL string) string {
+func (m *MemoryDB) FullURL(hashedURL string) (string, error) {
 	txn := m.DB.Txn(false)
 	defer txn.Abort()
 	raw,err := txn.First("urls", "tinyURL", hashedURL)
 	if err != nil {
-		log.Fatalf("No short URL for this site %v", err)
+		return "", err
 	}
-	return raw.(Row).url
+	fmt.Println(raw)
+	if raw == nil {
+		return "", status.Errorf(codes.OutOfRange, "No original url for this short url") 
+	}
+	return raw.(Row).url, nil
 }
 
 func (m *MemoryDB) AddURL(url, shortURL string) error {
@@ -100,7 +104,8 @@ func (m *MemoryDB) URLExist(url string) (string, error) {
 		return "", err
 	}
 	if raw == nil {
-		return "", status.Errorf(codes.OutOfRange, "") 
+		// заглушка с ошибкой, чтобы алгоритм дальше работал
+		return "", status.Errorf(codes.OutOfRange, "No short url for this url") 
 	}
 	return raw.(Row).shortURL, nil
 }

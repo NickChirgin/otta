@@ -8,10 +8,13 @@ import (
 
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/nickchirgin/otta/pkg/hasher"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type PostgreSQL struct {
 	DB *sql.DB
+	id int
 }
 var (
 	Postgre *PostgreSQL
@@ -32,42 +35,39 @@ func init() {
 		log.Fatalf("Error %v while pinging postgre db", err)
 	} 
 	log.Println("Postgre database ready to accept connections")
-	Postgre = &PostgreSQL{DB: conn}
+	Postgre = &PostgreSQL{DB: conn, id: 1}
 }
 
 func (p *PostgreSQL) ShortUrl(url string) string {
 	tinyURL, err := p.URLExist(url)
 	if err != nil {
-		id, err := p.LastID()
-		if err != nil {
-			log.Fatalf("Error while finding last id in postgre %v", err)
-		}
-		tinyURL = hasher.HashURL(int(id))
+		tinyURL = hasher.HashURL(p.id)
 		err = p.AddURL(url, tinyURL)
 		if err != nil {
 			log.Fatalf("Error while adding data to postgre %v", err)
 		}
+		p.id++
 	}
 	return tinyURL
 }
 
-func (p *PostgreSQL) FullURL(shortUrl string) string {
+func (p *PostgreSQL) FullURL(shortUrl string) (string, error) {
 	stmt, err := p.DB.Prepare("SELECT url FROM urls WHERE shorturl=$1")
 	if err != nil {
-		log.Fatalf("Error while querying postgre %v", err)
+		return "", err
 	}
 	var url string
 	defer stmt.Close()
-	err = stmt.QueryRow(shortUrl).Scan(url)
+	err = stmt.QueryRow(shortUrl).Scan(&url)
 	if err != nil {
-		log.Fatalf("Error while executing query %v", err)
+		return "", status.Error(codes.NotFound, "Row doesnt exist")
 	}
-	return url
+	return url, nil
 }
 
 func (p *PostgreSQL) LastID() (int64, error) {
 	var id int64
-	result, err := p.DB.Exec("SELECT currval(pg_get_serial_sequence('urls', 'id'))")
+	result, err := p.DB.Exec("SELECT currval('urls', 'id')")
 	if err != nil {
 		return 0, err
 	}
@@ -85,7 +85,7 @@ func (p *PostgreSQL) URLExist(url string) (string, error) {
 	}
 	defer stmt.Close()
 	var shortURL string
-	err = stmt.QueryRow(url).Scan(shortURL)
+	err = stmt.QueryRow(url).Scan(&shortURL)
 	if err != nil {
 		return "", err
 	}
