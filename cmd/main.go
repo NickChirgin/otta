@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/nickchirgin/otta/internal/helpers"
 	"github.com/nickchirgin/otta/internal/storage"
 	"github.com/nickchirgin/otta/proto"
 	"google.golang.org/grpc"
@@ -15,13 +16,13 @@ type server struct {
 }
 
 func main() {
+	db := helpers.ChooseDB()
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	proto.RegisterUrlServiceServer(s, &server{DB: storage.Postgre})
-	
+	proto.RegisterUrlServiceServer(s, &server{DB: db})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
@@ -41,3 +42,4 @@ func (s *server) FullURL(ctx context.Context, req *proto.HashedURL) (*proto.URL,
 	}
 	return &proto.URL{FullURL: URL}, nil
 }
+

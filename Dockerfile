@@ -12,4 +12,4 @@ RUN go mod tidy
 RUN protoc --go_out=. proto/tinyurl.proto --go-grpc_out=. proto/tinyurl.proto
 
 
-CMD go run cmd/main.go
+CMD go run cmd/main.go -memory
