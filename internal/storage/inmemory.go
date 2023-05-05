@@ -104,7 +104,7 @@ func (m *MemoryDB) URLExist(url string) (string, error) {
 	}
 	if raw == nil {
 		// заглушка с ошибкой, чтобы алгоритм дальше работал
-		return "", status.Errorf(codes.OutOfRange, "No short url for this url") 
+		return "", status.Errorf(codes.NotFound, "No short url for this url") 
 	}
 	return raw.(Row).shortURL, nil
 }

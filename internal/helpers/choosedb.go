@@ -7,9 +7,11 @@ import (
 )
 
 func ChooseDB() storage.IStorage {
-	memory := os.Args[1]
-	if memory == "-memory"	{
-		return storage.MemDB
+	if len(os.Args) > 1 {
+		memory := os.Args[1]
+		if memory == "-memory"	{
+			return storage.MemDB
+		}
 	}
 	return storage.Postgre
 }

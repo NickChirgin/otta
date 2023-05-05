@@ -6,17 +6,30 @@ services:
       - .env
     volumes:
       - .:/app
+    networks:
+      network:
+        ipv4_address: 10.5.0.5
   postgre:
     image: postgres:alpine
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_HOST=10.5.0.3
     ports:
       - "5432:5432"
     volumes:
       - ./sql/:/docker-entrypoint-initdb.d/
       - postgre-db:/val/lib/postgresql/data1
+    networks:
+      network:
+        ipv4_address: 10.5.0.3
 volumes:
   postgre-db:
+networks:
+  network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
