@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
 
 	"github.com/nickchirgin/otta/internal/helpers"
 	"github.com/nickchirgin/otta/internal/storage"
@@ -23,9 +26,21 @@ func main() {
 	}
 	s := grpc.NewServer()
 	proto.RegisterUrlServiceServer(s, &server{DB: db})
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	go func() {
+    fmt.Println("Starting server")
+    if err := s.Serve(lis); err != nil {
+      log.Fatalf("Failed to serve: %v", err)
+    }
+  }()
+  ch := make(chan os.Signal, 1)
+  signal.Notify(ch, os.Interrupt)
+
+  <-ch
+  fmt.Println("Stopping the server")
+  s.GracefulStop()
+  lis.Close()
+	storage.Postgre.DB.Close()
+  fmt.Println("End of program")
 }
 
 func (s *server) TinyURL(ctx context.Context, req *proto.URL) (*proto.HashedURL, error) {

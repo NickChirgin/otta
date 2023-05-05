@@ -21,7 +21,7 @@ var (
 	username = os.Getenv("DB_USER")
 	password = os.Getenv("DB_PASSWORD")
 	schema   = os.Getenv("DB_NAME")
-	host = os.Getenv("DB_HOST")
+	host = "10.5.0.3" 
 )
 
 func init() {
