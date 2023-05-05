@@ -39,7 +39,6 @@ git clone https://github.com/NickChirgin/otta.git
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=ozon
-DB_HOST=${pwd}-postgre-1
 ```
 3. Сервис может работать как с PostgreSQL, так и с In-memory DB (в качестве in memory решения выбрал библиотеку memdb)  
 По умолчанию сервис работает с постгре, но это можно поменять, добавив флаг "-memory" в Dockerfile, чтобы получилось:  
@@ -51,11 +50,9 @@ CMD go run cmd/main.go -memory
 docker compose up --build
 ```
 
-В качестве теста сервиса можно использовать Postman, но чтобы сделать запрос нужно узнать ip контейнера.  
-Для этого используем команду:
+В качестве теста сервиса можно использовать Postman, сервис находится по такому адресу:  
 ```
-docker inspect \                       
-  -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ID_OR_CONTAINER_NAME
+10.5.0.5:50051
 ```
 
 Сервис написан с помощью gRPC протокола и имеет два метода:  
